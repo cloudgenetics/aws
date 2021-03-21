@@ -84,7 +84,7 @@ Resources:
     Type: AWS::Batch::JobQueue
     Properties:
       JobQueueName: BatchProcessingJobQueue
-      Priority: 1
+      Priority: 100
       ComputeEnvironmentOrder:
       - Order: 1
         ComputeEnvironment:
