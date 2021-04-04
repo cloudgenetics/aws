@@ -22,7 +22,7 @@ aws cloudformation create-stack --stack-name batch-cloud-genetics --template-bod
 echo "Deploy complete."
 
 # Check status
-STACKSTATUS=$(aws cloudformation describe-stacks --stack-name batch-cloud-genetics  --query 'Stacks[].StackStatus' --output text)+!
+STACKSTATUS=$(aws cloudformation describe-stacks --stack-name batch-cloud-genetics  --query 'Stacks[].StackStatus' --output text)
 
 # Get ARNs
 COMPUTEARN=$(aws cloudformation describe-stacks --stack-name batch-cloud-genetics --query 'Stacks[].Outputs[?OutputKey==`ComputeEnvironmentArn`].OutputValue' --output text)
