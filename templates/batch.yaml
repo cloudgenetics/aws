@@ -89,6 +89,43 @@ Resources:
       - Order: 1
         ComputeEnvironment:
           Ref: ComputeEnvironment
+  IncreasedVolComputeLaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateName: "inc-volume-encrypt"
+      LaunchTemplateData:
+        BlockDeviceMappings:
+          - DeviceName:  '/dev/sdb'  # Amazon ECS-Optimized Amazon Linux 2 ami accepts EDS vol /dev/sd[b-l]
+            Ebs:
+              DeleteOnTermination: true
+              Encrypted: true
+              VolumeSize: 500
+              VolumeType: "gp2"
+        UserData:
+         "Fn::Base64": !Sub |
+            MIME-Version: 1.0
+            Content-Type: multipart/mixed; boundary="==MYBOUNDARY=="
+
+            --==MYBOUNDARY==
+            Content-Type: text/x-shellscript; charset="us-ascii"
+
+            #!/bin/bash          
+            mkfs.ext4  /dev/sdb
+            (
+            echo n # Add a new partition
+            echo p # Primary partition
+            echo 1 # Partition number
+            echo   # First sector (Accept default: 1)
+            echo   # Last sector (Accept default: varies)
+            echo w # Write changes
+            ) | fdisk  /dev/sdb
+            mkfs.ext4  /dev/xvdb1
+            mkdir /data
+            echo " /dev/xvdb1       /data  ext4    defaults        0       2" >> /etc/fstab
+            mount -a
+            serSpeciale docker restart 
+
+            --==MYBOUNDARY==        
   ComputeEnvironment:
     Type: AWS::Batch::ComputeEnvironment
     Properties:
@@ -98,6 +135,9 @@ Resources:
         MinvCpus: 0
         DesiredvCpus: 0
         MaxvCpus: 4
+        LaunchTemplate:
+          LaunchTemplateId: !Ref IncreasedVolComputeLaunchTemplate
+          Version: !GetAtt IncreasedVolComputeLaunchTemplate.LatestVersionNumber
         InstanceTypes:
         #- a1.medium
         - optimal

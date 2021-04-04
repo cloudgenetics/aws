@@ -17,6 +17,7 @@ echo "Deploying stack started at: $(date)"
 echo "please wait..."
 
 # Deploy stack
+# Configure and deploy AWS Batch compute environment
 aws cloudformation create-stack --stack-name batch-cloud-genetics --template-body file://templates/batch.yaml --capabilities CAPABILITY_NAMED_IAM --output text;aws cloudformation wait stack-create-complete --stack-name batch-cloud-genetics
 echo "Deploy complete."
 
