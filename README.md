@@ -24,3 +24,16 @@ To delete the stack:
 aws cloudformation delete-stack --stack-name batch-cloud-genetics
 ```
 
+---
+### Submit job to AWS Batch
+
+Edit `job.json` file and submit to AWS batch processing
+
+```
+aws batch submit-job --cli-input-json file://job.json
+```
+
+To query if a job is running:
+```
+aws batch list-jobs --job-queue BatchProcessingJobQueue
+```
